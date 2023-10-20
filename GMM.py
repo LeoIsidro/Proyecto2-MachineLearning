@@ -1,29 +1,25 @@
 import numpy as np
-from scipy.stats import multivariate_normal
+from sklearn.cluster import KMeans
 
 class GMM:
 
-    def __init__(self, n_clusters, n_iter=100, tolerancia=1e-6):
+    def __init__(self, n_clusters, n_iter=1000, tolerancia=1e-3):
         self.n_cluster = n_clusters
         self.n_iter = n_iter
         self.tolerancia = tolerancia
 
     def inicializar_parametros(self,data):
-        n,d =data.shape
-        np.random.seed(0)
 
-        #Elegimos un valor aleatorio para la media de cada cluster
+        # Inicializamos  las medias utilizando K-means
+        kmeans = KMeans(n_clusters=self.n_cluster, random_state=0,n_init=100).fit(data)
+        self.means = kmeans.cluster_centers_
 
-        # Inicializar las medias aleatoriamente eligiendo n_components muestras aleatorias del conjunto de datos.
-        random_indices = np.random.choice(n, self.n_cluster, replace=False)
-        self.means = data[random_indices]
-
-        # Inicializar las matrices de covarianza como matrices de identidad.
-        self.covarianza = [np.eye(d) for _ in range(self.n_cluster)]
+        # Inicializamos las matrices de covarianza basada en la covarianza de los datos reales.
+        covarianzas_data = np.cov(data, rowvar=False)
+        self.covarianza = [covarianzas_data.copy() for _ in range(self.n_cluster)]
 
 
         #Inicializamos las probabilidades de cada cluster
-
         self.probabilidad = np.ones(self.n_cluster) / self.n_cluster
 
     def Ni(self,Yz,j):
@@ -71,7 +67,6 @@ class GMM:
         for j in range(len(X)):
             for i in range(self.n_cluster):
                 prob=self.funcion_probabilidad(X[j],media[i],desviacion_estandar[i])
-                #prob=multivariate_normal.pdf(X[j],mean=media[i],cov=desviacion_estandar[i])
                 Yz[j][i]=pi[i]*prob
 
             Yz[j]/=np.sum(Yz[j])    
@@ -85,10 +80,6 @@ class GMM:
 
         log_likelihoods = []
 
-        print("means :",self.means)
-        print("covarianza :",self.covarianza)
-        print("probabilidad :",self.probabilidad)
-
         for i in range(self.n_iter):
             Yz=self.probabilidad_posteriori(data,self.means,self.covarianza,self.probabilidad)
             
@@ -97,11 +88,10 @@ class GMM:
 
             Nk= np.sum(Yz,axis=0)
             for k in range(self.n_cluster):
-                #self.means[k]=self.media(data,Yz,k)
-                #self.covarianza[k]=self.desviacion_estandar(data,Yz,k)
-                #self.probabilidad[k]=self.pi(Yz,k)
                 self.means[k] = np.sum(data * Yz[:, k][:, np.newaxis], axis=0) / Nk[k]
-                self.covarianza[k] = np.dot((data - self.means[k]).T, (data - self.means[k]) * Yz[:, k][:, np.newaxis]) / Nk[k]
+                cov_actualizar=np.dot((data - self.means[k]).T, (data - self.means[k]) * Yz[:, k][:, np.newaxis]) / Nk[k]
+                cov_actualizar+=self.tolerancia * np.eye(data.shape[1])
+                self.covarianza[k] = cov_actualizar
                 self.probabilidad[k] = Nk[k] / len(data)
 
             log_likelihood = np.sum(np.log(np.sum([self.probabilidad[k] * self.funcion_probabilidad(data[i], self.means[k], self.covarianza[k]) for k in range(self.n_cluster)], axis=0)))    
@@ -116,9 +106,6 @@ class GMM:
     def prediccion(self,data):
         Yz=self.probabilidad_posteriori(data,self.means,self.covarianza,self.probabilidad)
         return np.argmax(Yz,axis=1)
-    
-    def obtener_parametros(self):
-        return self.means,self.covarianza,self.probabilidad
 
 
 
