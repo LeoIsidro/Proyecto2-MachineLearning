@@ -3,7 +3,7 @@ from sklearn.cluster import KMeans
 
 class GMM:
 
-    def __init__(self, n_clusters, n_iter=1000, tolerancia=1e-3):
+    def __init__(self, n_clusters, n_iter=100, tolerancia=1e-5):
         self.n_cluster = n_clusters
         self.n_iter = n_iter
         self.tolerancia = tolerancia
