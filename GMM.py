@@ -21,36 +21,7 @@ class GMM:
 
         #Inicializamos las probabilidades de cada cluster
         self.probabilidad = np.ones(self.n_cluster) / self.n_cluster
-
-    def Ni(self,Yz,j):
-        sum=0
-        for i in range(len(Yz)):
-            sum+=Yz[i][j]
-
-        return sum
-    
-    def media(self,X, Yz,i):
-        media_vector=[]
-        for j in range(len(X[0])):
-            media_vector.append(1/self.Ni(Yz,i)*np.dot(X[:,j],Yz[:,i]))
-
-        return media_vector
-
-
-    def desviacion_estandar(self,X,Yz,i):
-        matriz_covarianzas = np.zeros((len(X[0]), len(X[0])))  
-        for j in range(len(X)):
-            matriz_covarianzas += Yz[j][i] * np.dot((X[j] - self.means[i]), (X[j] - self.means[i]))
-
-
-        matriz_covarianzas=1/self.Ni(Yz,i)*matriz_covarianzas    
-
-        return matriz_covarianzas
-
-    def pi(self,Yz,i):
-        return self.Ni(Yz,i)/len(Yz)
-            
-
+        
 
     def funcion_probabilidad(self,X,media,desviacion_estandar):
         d=X.shape[0]
