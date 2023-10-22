@@ -49,13 +49,15 @@ class GMM:
 
         self.inicializar_parametros(data)
 
+
+        # Inicializamos la lista de log-likelihoods
         log_likelihoods = []
 
         for i in range(self.n_iter):
             Yz=self.probabilidad_posteriori(data,self.means,self.covarianza,self.probabilidad)
             
 
-            # Actualizamos los parametros
+            # Actualizamos los parametros, utilizamos newaxis para que podamos actualizar cada componente por separado, en lugar de actualizar la matriz completa
 
             Nk= np.sum(Yz,axis=0)
             for k in range(self.n_cluster):
@@ -65,9 +67,11 @@ class GMM:
                 self.covarianza[k] = cov_actualizar
                 self.probabilidad[k] = Nk[k] / len(data)
 
+            # Calculamos el log-likelihood
             log_likelihood = np.sum(np.log(np.sum([self.probabilidad[k] * self.funcion_probabilidad(data[i], self.means[k], self.covarianza[k]) for k in range(self.n_cluster)], axis=0)))    
             log_likelihoods.append(log_likelihood)
 
+            # Comprobamos si el algoritmo ha convergido
             if i > 0 and abs(log_likelihood - log_likelihoods[-2]) < self.tolerancia:
                 break
 
@@ -75,7 +79,9 @@ class GMM:
         self.EM(data)
 
     def prediccion(self,data):
+        # Calculamos la probabilidad posteriori para cada punto de datos
         Yz=self.probabilidad_posteriori(data,self.means,self.covarianza,self.probabilidad)
+        # Asignamos la etiqueta de cluster a cada punto de datos
         return np.argmax(Yz,axis=1)
 
 

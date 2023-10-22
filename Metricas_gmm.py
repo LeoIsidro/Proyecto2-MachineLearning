@@ -1,16 +1,14 @@
 from GMM import GMM,np
-
-import numpy as np
 import matplotlib.pyplot as plt
-
-
+from sklearn.decomposition import PCA
 import pandas as pd
 
 names = pd.read_csv("./clase.txt")
 
 dataset = pd.read_csv("./dataset_tissue.txt", skiprows=1, header=None).drop(0, axis=1).transpose()
 
-from sklearn.decomposition import PCA
+
+# Reducir la dimensionalidad de los datos, redusimos a 70 componentes para mantener como minimo el 95% de la varianza
 
 pca = PCA(n_components=70)
 df_pca = pca.fit_transform(dataset)                   
@@ -24,11 +22,16 @@ k = 7
 # Crea el modelo GMM
 gmm = GMM(n_clusters=k)
 
-# Ajusta el modelo a los datos
+# Entrena el modelo
 gmm.entrenamiento(X)
 
-# Predice las etiquetas de los clusters para cada punto de datos
+# Predice las etiquetas de los clusters
 labels = gmm.prediccion(X)
+
+
+
+
+# Metricas
 
 #Metrica Matriz similitud
 
@@ -89,7 +92,7 @@ print("rand_index:", rand_index)"""
 
 # Metrica silueta
 
-from sklearn.metrics import silhouette_samples
+"""from sklearn.metrics import silhouette_samples
 from sklearn.metrics import silhouette_score
 
 silhouette_vals = silhouette_samples(X, labels)
@@ -119,7 +122,7 @@ ax.axvline(x=average_silhouette_score, color="red", linestyle="--")
 ax.set_yticks([])  # Borrar etiquetas en el eje y
 
 print("score:", average_silhouette_score)
-plt.show()
+plt.show()"""
 
 
 
@@ -138,7 +141,7 @@ plt.title("Datos de entrada")
 
 # Resultados del GMM
 plt.subplot(1, 2, 2)
-plt.scatter(X[:, 7], X[:, 8], c=labels_prediccion, cmap='viridis')
+plt.scatter(X[:, 7], X[:, 8], c=labels, cmap='viridis')
 plt.title("Resultados del GMM")
 
 # Centros de las distribuciones gaussianas
