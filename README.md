@@ -3,6 +3,6 @@
 ## Integrantes
 
 - Leonardo Isidro
--  Pedro Mori
-- Salavdor Hilario
--  Gabriel Espinoza
+- Pedro Mori
+- Salvador Hilario
+- Gabriel Espinoza
