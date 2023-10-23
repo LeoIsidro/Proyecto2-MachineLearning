@@ -2,7 +2,7 @@
 
 ## Integrantes
 
-## Leonardo Isidro
-## Pedro Mori
-## Salavdor Hilario
-## Gabriel Espinoza
+- Leonardo Isidro
+-  Pedro Mori
+- Salavdor Hilario
+-  Gabriel Espinoza
