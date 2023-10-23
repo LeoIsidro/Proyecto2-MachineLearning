@@ -4,5 +4,5 @@
 
 - Leonardo Isidro
 - Pedro Mori
-- Salvador Hilario
+- Salvador Hilares
 - Gabriel Espinoza
